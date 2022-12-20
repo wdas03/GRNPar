@@ -1,0 +1,2 @@
+'/Users/williamdas/Documents/Parallel Functional Programming (Fall 2022)/Final Project/GRNPar/grnPAR/.stack-work/install/aarch64-osx/e2d85cdf74a038c6a8b0e20e3d8de7779686dc73d12c1d58e7a2aaf75272237e/9.2.5/bin/grnPAR-exe' 'src/nodes_100_time_300.csv' 'testOutput' '3' 'par' +RTS '-N' '-N8' '-lf' '-s' '-threaded' 
+<<ghc: 23654162688 bytes, 886 GCs, 1160620/2305872 avg/max bytes residency (44 samples), 47M in use, 0.000 INIT (0.005 elapsed), 3.513 MUT (0.927 elapsed), 0.154 GC (0.091 elapsed) :ghc>>

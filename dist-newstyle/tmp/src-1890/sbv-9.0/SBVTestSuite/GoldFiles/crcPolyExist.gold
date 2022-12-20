@@ -1,0 +1,14 @@
+INPUTS
+  s0 :: SWord16, existential, aliasing "poly"
+  s1 :: SWord 48, aliasing "sent"
+  s2 :: SWord 48, aliasing "received"
+CONSTANTS
+TABLES
+ARRAYS
+UNINTERPRETED CONSTANTS
+USER GIVEN CODE SEGMENTS
+AXIOMS
+DEFINE
+CONSTRAINTS
+ASSERTIONS
+OUTPUTS
