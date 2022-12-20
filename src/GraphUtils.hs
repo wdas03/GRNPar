@@ -23,23 +23,22 @@ Data types representing boolean states of genes and boolean network consisting o
 - NodeState:
     - name :: String -> name of gene
     - timeStates :: [Int] -> expression of gene across time-series in order
-
-- BoolEdge
-    - v_i :: NodeState -> source node
-    - v_j :: NodeState -> target node
-
-- BoolNetwork
-    - nodes :: [NodeState] -> all nodes/genes in network
-    - connections :: [BoolEdge] -> directed edges between genes
 -}
 
 data NodeState = NodeState { name :: String
                            , timeStates :: [Int] } deriving (Eq, Ord)
+
 instance Show NodeState where
     show (NodeState n _) = n 
+
 instance NFData NodeState where
     rnf (NodeState n ts) = rnf n `seq` rnf ts
 
+{-
+- BoolEdge
+    - v_i :: NodeState -> source node
+    - v_j :: NodeState -> target node
+-}
 data BoolEdge = BoolEdge { v_i :: NodeState
                          , v_j :: NodeState } deriving (Eq)
 instance Show BoolEdge where
@@ -47,8 +46,15 @@ instance Show BoolEdge where
 instance NFData BoolEdge where
     rnf (BoolEdge i j) = rnf i `seq` rnf j
 
+{-
+- BoolNetwork
+    - nodes :: [NodeState] -> all nodes/genes in network
+    - connections :: [BoolEdge] -> directed edges between genes
+-}
 data BoolNetwork = BoolNetwork { nodes :: [NodeState]
-                               , connections :: [BoolEdge] } deriving (Eq, Show)   
+                               , connections :: [BoolEdge] } deriving (Eq, Show) 
+instance NFData BoolNetwork where
+    rnf (BoolNetwork n c) = rnf n `seq` rnf c 
                
 
 {-

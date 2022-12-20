@@ -15,6 +15,7 @@ Parallel implementation of inferring gene regulatory networks using an informati
 
 ## Running Executables
 From GRNPar directory, run: 
+
 `stack setup`
 
 `stack build`
@@ -29,5 +30,7 @@ To run the executable, run:
 
 Example: 
 
-`stack exec grnPAR-exe "src/nodes_100_time_300.csv" "testOutput" 3 par -- +RTS -N8 -lf -s -threaded`
+`stack exec grnPAR-exe "src/data/nodes_100_time_300.csv" "./src/output_files/nodes_100_time_300" 3 par -- +RTS -N8 -lf -s -threaded`
+
+`threadscope GRNPar-exe.eventlog`
 
