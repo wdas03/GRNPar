@@ -39,6 +39,8 @@ To run parallel implementation on 8 cores:
 `threadscope GRNPar-exe.eventlog`
 
 ### Generating Random Gene Expression Data
+_Requires Python and pandas._
+
 From GRNPar, run:
 
 `python src/generate_data.py --numNodes 100 --time 300 --outputFile "src/data/nodes_100_time_300.csv"`

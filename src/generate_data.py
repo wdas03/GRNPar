@@ -5,7 +5,6 @@ Main script for generating random large datasets of input/output gene expression
 
 import random
 import pandas as pd
-import numpy as np
 import argparse
 
 
