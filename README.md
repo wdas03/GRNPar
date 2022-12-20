@@ -14,6 +14,8 @@ Parallel implementation of inferring gene regulatory networks using an informati
     `dot - graphviz version 7.0.4 (20221203.1631)`
 
 ## Running Executables
+
+### GRNPar Executable
 From GRNPar directory, run: 
 
 `stack setup`
@@ -22,7 +24,7 @@ From GRNPar directory, run:
 
 To run the executable, run:
 
-`stack exec grnPAR-exe <csvFilename> <k> <outputFile> <mode>`
+`stack exec GRNPar-exe <csvFilename> <k> <outputFile> <mode>`
 
 - _csvFilename_: gene-expression time-series data
 - _k_: fixed number of input nodes for each target node
@@ -32,7 +34,13 @@ To run the executable, run:
 ### Example
 To run parallel implementation on 8 cores:
   
-`stack exec grnPAR-exe "src/data/nodes_100_time_300.csv" "./src/output_files/nodes_100_time_300" 3 par -- +RTS -N8 -lf -s -threaded`
+`stack exec GRNPar-exe "src/data/nodes_100_time_300.csv" "./src/output_files/nodes_100_time_300" 3 par -- +RTS -N8 -lf -s -threaded`
 
 `threadscope GRNPar-exe.eventlog`
 
+### Generating Random Gene Expression Data
+From GRNPar, run:
+
+`python src/generate_data.py --numNodes 100 --time 300 --outputFile "src/data/nodes_100_time_300.csv"`
+
+- Creates a random gene expression time-series consisting of 100 genes (nodes) with 300 timesteps.
