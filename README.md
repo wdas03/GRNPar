@@ -23,13 +23,15 @@ From GRNPar directory, run:
 To run the executable, run:
 `stack exec grnPAR-exe <csvFilename> <k> <outputFile> <mode>`
 
-- csvFilename: gene-expression time-series data
-- k: fixed number of input nodes for each target node
-- outputFile: output png filename for generated boolean network
-- mode: "seq" or "par" (seq for sequential algorithm and par for parallel implementation)
+- _csvFilename_: gene-expression time-series data
+- _k_: fixed number of input nodes for each target node
+- _outputFile_: output png filename for generated boolean network
+- _mode_: "seq" or "par" (seq for sequential algorithm and par for parallel implementation)
 
 Example: 
 
+- To run parallel implementation on 8 cores:
+  
 `stack exec grnPAR-exe "src/data/nodes_100_time_300.csv" "./src/output_files/nodes_100_time_300" 3 par -- +RTS -N8 -lf -s -threaded`
 
 `threadscope GRNPar-exe.eventlog`
