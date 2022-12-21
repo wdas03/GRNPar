@@ -40,7 +40,7 @@ To run parallel implementation on 4 cores, and only generate an image:
 >
 > `threadscope GRNPar-exe.eventlog`
 
-To run on E. coli dataset with _k_ = 4:
+To run on E. coli dataset on 8 cores with _k_ = 4:
 
 > `stack exec GRNPar-exe "src/data/e_coli.csv" 4 0 1 par -- +RTS -N8 -lf -s -threaded`
 
