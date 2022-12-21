@@ -43,7 +43,6 @@ packages:
 extra-deps: 
 - list-extras-0.4.1.6
 - sbv-9.0
-- cassava-0.5.3.0
 - vector-0.12.3.1
 - bytestring-0.11.3.1
 - graphite-0.10.0.1

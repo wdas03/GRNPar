@@ -37,7 +37,6 @@ library
   build-depends:
       base >=4.7 && <5
     , bytestring
-    , cassava
     , containers
     , deepseq
     , graphite
@@ -48,7 +47,6 @@ library
     , monad-par
     , parallel
     , sbv
-    , split
     , text
     , vector
     , word8
@@ -65,7 +63,6 @@ executable GRNPar-exe
       GRNPar
     , base >=4.7 && <5
     , bytestring
-    , cassava
     , containers
     , deepseq
     , graphite
@@ -76,7 +73,6 @@ executable GRNPar-exe
     , monad-par
     , parallel
     , sbv
-    , split
     , text
     , vector
     , word8
@@ -93,7 +89,6 @@ test-suite GRNPar-test
   build-depends:
       base >=4.7 && <5
     , bytestring
-    , cassava
     , containers
     , deepseq
     , graphite
@@ -105,7 +100,6 @@ test-suite GRNPar-test
     , monad-par
     , parallel
     , sbv
-    , split
     , text
     , vector
     , word8

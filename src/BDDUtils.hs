@@ -18,7 +18,7 @@ import Data.List (maximumBy)
 import qualified Data.Matrix as M
 import qualified Data.Vector as Vec
 
-import Control.Parallel.Strategies (parMap, rdeepseq, rseq, using, parListChunk, withStrategy, parBuffer)
+import Control.Parallel.Strategies (parMap, rdeepseq, using, parListChunk, parBuffer)
 import Control.DeepSeq(NFData(..))
 
 {-
@@ -85,7 +85,7 @@ evaluateFunc (XOR x y) func
   where
     andTrue = evaluateFunc x func && evaluateFunc y func
 evaluateFunc (NOT b) func = not (evaluateFunc b func)
-evaluateFunc (State x) func
+evaluateFunc (State x) _
     | x == 1    = True
     | otherwise = False
 
@@ -142,7 +142,7 @@ Example:
 -}
 getBDDFromFunc :: [String] -> [Int] -> BDD
 getBDDFromFunc [] _       = error "Invalid input."
-getBDDFromFunc [x] _      = error "Invalid input."
+getBDDFromFunc [_] _      = error "Invalid input."
 getBDDFromFunc (x:xs) ops = foldl (\acc (y, ys) -> if ys == 1 then AND acc (Name y) else OR acc (Name y)) (Name x) tailZipped
   where
     tailZipped = zip xs ops
@@ -161,10 +161,14 @@ getRegulatoryNodes targetNode network = map v_i $ filter (\(BoolEdge _ out) -> o
 Compute genewise dynamics consistency metric for every possible boolean expression with input nodes mapping to target node.
 -}
 searchUpdateRule :: [NodeState] -> NodeState -> Int -> [(Double, BDD)]
-searchUpdateRule inpNodes targetNode timeLength = map (\(p, r) -> (geneWiseDynamicsConsistency p targetStates, r)) predStates
+searchUpdateRule inpNodes targetNode timeLength = 
+  case allTargetStates of 
+      [] -> error "Invalid target states."
+      [_] -> error "Invalid target states."
+      (_:targetStates) -> map (\(p, r) -> (geneWiseDynamicsConsistency p targetStates, r)) predStates
   where
     -- Get target states of target node
-    (_:targetStates) = timeStates targetNode
+    allTargetStates = timeStates targetNode
 
     inpNodeNames = map name inpNodes
     inpMatrix    = M.fromLists $ map (\xs -> map (name xs,) (timeStates xs)) inpNodes
@@ -181,15 +185,25 @@ searchUpdateRule inpNodes targetNode timeLength = map (\(p, r) -> (geneWiseDynam
                         ruleCombos
 
 searchUpdateRulePar :: [NodeState] -> NodeState -> Int -> [(Double, BDD)]
-searchUpdateRulePar inpNodes targetNode timeLength = map (\(p, r) -> (geneWiseDynamicsConsistency p targetStates, r)) predStates
+searchUpdateRulePar inpNodes targetNode timeLength = 
+  case allTargetStates of 
+      [] -> error "Invalid target states."
+      [_] -> error "Invalid target states."
+      (_:targetStates) -> map (\(p, r) -> (geneWiseDynamicsConsistency p targetStates, r)) predStates
   where
-    ruleCombos       = parMap rdeepseq (getBDDFromFunc inpNodeNames) (getConjDisjCombos (length inpNodes))
-    (_:targetStates) = timeStates targetNode
+    -- Get target states of target node
+    allTargetStates = timeStates targetNode
+
     inpNodeNames     = map name inpNodes
     inpMatrix        = M.fromLists $ map (\xs -> map (name xs,) (timeStates xs) `using` parBuffer 50 rdeepseq) inpNodes
+
+    -- Get boolean expression combos
+    ruleCombos       = parMap rdeepseq (getBDDFromFunc inpNodeNames) (getConjDisjCombos (length inpNodes))
+    
+    -- Predict states using boolean expression
     predStates       = parMap rdeepseq (\ruleBDD ->
-                            let p = map (fromEnum . \t -> evaluateFunc ruleBDD (filter (\(nn, _) -> nn `elem` inpNodeNames)
-                                    $ Vec.toList  (M.getCol t inpMatrix)))
+                            let p = map (fromEnum . \t -> evaluateFunc ruleBDD 
+                                    $ Vec.toList  (M.getCol t inpMatrix))
                                     [1..(timeLength - 1)] 
                                     `using` parBuffer 50 rdeepseq
                             in (p, ruleBDD))

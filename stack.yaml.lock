@@ -19,13 +19,6 @@ packages:
   original:
     hackage: sbv-9.0
 - completed:
-    hackage: cassava-0.5.3.0@sha256:06e6dbc0f3467f3d9823321171adc08d6edc639491cadb0ad33b2dca1e530d29,6083
-    pantry-tree:
-      sha256: f019c04fa24b9cf13ee313047a8d510f04422cebc434867e14322abc18aff112
-      size: 1551
-  original:
-    hackage: cassava-0.5.3.0
-- completed:
     hackage: vector-0.12.3.1@sha256:fffbd00912d69ed7be9bc7eeb09f4f475e0d243ec43f916a9fd5bbd219ce7f3e,8238
     pantry-tree:
       sha256: 0537bb4fc4d6aba4ba970cf4aa82feda0227441a6b60ceb4a5b5c8618837f248

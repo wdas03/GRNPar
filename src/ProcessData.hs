@@ -2,21 +2,11 @@ module ProcessData
   ( csvToNodeStates
   ) where
 
-import Control.Monad
-import System.IO
-import System.Environment
-
 import qualified Data.ByteString.Char8 as C
-import qualified Data.ByteString as B
-import Data.Word8
 
-import Data.List.Split
-import GraphUtils (NodeState(..), BoolEdge(..), BoolNetwork(..))
+import GraphUtils (NodeState(..))
 import qualified Data.Matrix as M
-import qualified Data.Map.Strict as Map
 import qualified Data.Vector as Vec
-
-import Control.Parallel.Strategies (parMap, runEval, rdeepseq, parBuffer, withStrategy, parList, using, rseq, rpar)
 
 
 -- Get CSV Data
@@ -24,12 +14,12 @@ import Control.Parallel.Strategies (parMap, runEval, rdeepseq, parBuffer, withSt
 getCSVData :: String -> IO ([String], [[Int]])
 getCSVData fname = do
     inp <- C.readFile fname
-    let inp_ = C.lines inp
-    if length inp_ <= 1
-        then error "Invalid csv file."
-        else do
-            let (header:csvLines) = inp_
-                headerFormatted   = map C.unpack (C.split ',' header) 
+    let inpLines = C.lines inp
+    case inpLines of 
+        []                -> error "Invalid csv file."
+        [_]               -> error "Invalid csv file."
+        (header:csvLines) -> do
+            let headerFormatted   = map C.unpack (C.split ',' header) 
                 csvLinesFormatted = map (map (\l2 -> read (C.unpack l2) :: Int) . C.split ',') csvLines
             return (headerFormatted, csvLinesFormatted)
 
