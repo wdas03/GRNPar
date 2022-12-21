@@ -29,9 +29,9 @@ To run the executable, run:
 - _csvFilename_: gene-expression time-series data
 - _k_: fixed number of input nodes for each target node
 - _outputFile_: output png filename for generated boolean network
-- _mode_: "seq" or "par" (seq for sequential algorithm and par for parallel implementation)
 - _genExpressions_: whether or not to generate boolean expressions for each node (1 == True, 0 = False)
 - _genImage_: whether or not to generate image of boolean network for each node (1 == True, 0 = False)
+- - _mode_: "seq" or "par" (seq for sequential algorithm and par for parallel implementation)
 
 ### Example
 To run parallel implementation on 4 cores, and only generate an image:
