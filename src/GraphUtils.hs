@@ -11,7 +11,7 @@ import Data.GraphViz
 import Data.GraphViz.Attributes.Complete
 import Data.Hashable
 
-import Control.Parallel.Strategies (parListChunk, rdeepseq)
+import Control.Parallel.Strategies (parListChunk, rdeepseq, using)
 import Control.DeepSeq ( NFData(..) )
 
 import qualified Data.Text.Lazy    as TL
