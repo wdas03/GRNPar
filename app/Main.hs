@@ -8,8 +8,6 @@ import System.IO ()
 import System.Environment (getArgs)
 import Control.Monad
 
-import Data.List (intercalate)
-
 import GRNPar (genNetworkSeq, genNetworkPar)
 import GraphUtils (plotBoolNetworkPng, plotBoolNetworkPngPar, NodeState(..))
 import BDDUtils (getOptimalBoolExpressions, getOptimalBoolExpressionsPar)
