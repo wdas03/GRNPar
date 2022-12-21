@@ -16,7 +16,7 @@ import BDDUtils (getOptimalBoolExpressions, getOptimalBoolExpressionsPar)
 import ProcessData (csvToNodeStates)
 
 -- Main loop
--- Usage: grnPAR-exe <csvFilename> <k> <outputFile> <mode> 
+-- Usage: GRNPar-exe <csvFilename> <k> <outputFile> <genExpressions> <genImage> <mode>
 main :: IO ()
 main = do
     args <- getArgs
@@ -48,4 +48,4 @@ main = do
                     putStrLn $ "Printed to " ++ imgFilepath ++ "."
 
                 putStrLn "Finished."
-        _       -> putStrLn "Usage: grnPAR-exe <csvFilename> <k> <outputFile> <mode> <genExpressions> <genImage>"
+        _       -> putStrLn "Usage: GRNPar-exe <csvFilename> <k> <outputFile> <genExpressions> <genImage> <mode>"
