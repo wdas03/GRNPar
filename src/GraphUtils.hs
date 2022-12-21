@@ -11,7 +11,7 @@ import Data.GraphViz
 import Data.GraphViz.Attributes.Complete
 import Data.Hashable
 
-import Control.Parallel.Strategies (parMap, rdeepseq)
+import Control.Parallel.Strategies (parListChunk, rdeepseq)
 import Control.DeepSeq ( NFData(..) )
 
 import qualified Data.Text.Lazy    as TL
@@ -87,9 +87,10 @@ boolNetworkToDG network labelEdges = DG.fromArcsList
 -- Plot a BoolNetwork to png file
 boolNetworkToDGPar :: BoolNetwork -> Bool -> DG.DGraph String String
 boolNetworkToDGPar network labelEdges = DG.fromArcsList 
-                                    $ parMap rdeepseq (\(BoolEdge inp out) -> 
+                                        $ map  (\(BoolEdge inp out) -> 
                                         GT.Arc (name inp) (name out) (if labelEdges then "test" else "")) 
                                         (connections network) 
+                                        `using` parListChunk 50 rdeepseq
 
 -- Plot BoolNetwork to png file
 plotBoolNetworkPng :: BoolNetwork -> FilePath -> Bool -> IO FilePath
