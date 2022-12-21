@@ -203,8 +203,8 @@ searchUpdateRulePar inpNodes targetNode timeLength =
     
     -- Predict states using boolean expression
     predStates       = parMap rdeepseq (\ruleBDD ->
-                            let p = map (fromEnum . \t -> evaluateFunc ruleBDD 
-                                    $ Vec.toList  (M.getCol t inpMatrix))
+                            let p = map (fromEnum . \t -> evaluateFunc ruleBDD (filter (\(nn, _) -> nn `elem` inpNodeNames)
+                                    $ Vec.toList  (M.getCol t inpMatrix)))
                                     [1..(timeLength - 1)] 
                                     `using` parBuffer 50 rdeepseq
                             in (p, ruleBDD))
