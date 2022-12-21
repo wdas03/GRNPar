@@ -5,6 +5,9 @@ module BDDUtils
     , evaluateFunc
     , getOptimalBoolExpressions
     , getOptimalBoolExpressionsPar
+    , getRegulatoryNodes
+    , searchUpdateRule
+    , getBDDFromFunc
     ) where
 
 import GraphUtils (NodeState(..), BoolEdge(..), BoolNetwork(..))
@@ -116,6 +119,7 @@ Example: given a list of truth values, such as [1, 0, 0, 1], and a boolean expre
     - Using the BDD data type, we would evaluate this as: ((1 AND 0) OR 0) AND 1 
 -}
 getConjDisjCombos :: Int -> [[Int]]
+getConjDisjCombos 1 = [[0], [1]]
 getConjDisjCombos n = [[mod x 2^i | i <- [0..n-1]] | x <- [0..(2^n)-1]]
 
 
@@ -162,13 +166,19 @@ getRegulatoryNodesPar targetNode network = parMap rdeepseq v_i $ filter (\(BoolE
 searchUpdateRule :: [NodeState] -> NodeState -> Int -> [(Double, BDD)]
 searchUpdateRule inpNodes targetNode timeLength = map (\(p, r) -> (geneWiseDynamicsConsistency p targetStates, r)) predStates
   where
-    ruleCombos   = map (getBDDFromFunc inpNodeNames) $ getConjDisjCombos (length inpNodes)
+    -- Get target states of target node
     (_:targetStates) = timeStates targetNode
+
     inpNodeNames = map name inpNodes
     inpMatrix    = M.fromLists $ map (\xs -> map (name xs,) (timeStates xs)) inpNodes
+
+    -- Get boolean expression combos
+    ruleCombos = map (getBDDFromFunc inpNodeNames) $ getConjDisjCombos (length inpNodes - 1)
+
+    -- Predict states using boolean expression
     predStates   = map (\ruleBDD ->
                         let p = map (fromEnum . \t -> evaluateFunc ruleBDD (filter (\(nn, _) -> nn `elem` inpNodeNames)
-                                              $ Vec.toList  (M.getCol t inpMatrix)))
+                                              $ Vec.toList (M.getCol t inpMatrix)))
                                               [1..(timeLength - 1)]
                         in (p, ruleBDD))
                         ruleCombos
@@ -191,9 +201,11 @@ searchUpdateRulePar inpNodes targetNode timeLength = parMap rdeepseq (\(p, r) ->
 Get optimal boolean expressions for each node in network that optimizes genewise dynamics consistency.
 -}
 getOptimalBoolExpressions :: BoolNetwork -> Int -> [(NodeState, BDD, Double)]
-getOptimalBoolExpressions inferredNetwork k = map (\targetNode -> 
+getOptimalBoolExpressions inferredNetwork timeLength = map (\targetNode -> 
                                                 let inpNodes                     = getRegulatoryNodes targetNode inferredNetwork
-                                                    consistencyMetrics           = searchUpdateRule inpNodes targetNode k
+                                                    -- Get consistency metrics for each boolean expression
+                                                    consistencyMetrics           = searchUpdateRule inpNodes targetNode timeLength
+                                                    -- Get boolean expression with max consistency metric
                                                     (maxConsistency, optimalBDD) = maximumBy (comparing fst) consistencyMetrics
                                                 in (targetNode, optimalBDD, maxConsistency)) 
                                               $ nodes inferredNetwork
@@ -206,8 +218,6 @@ getOptimalBoolExpressionsPar inferredNetwork k = parMap rdeepseq (\targetNode ->
                                                 in (targetNode, optimalBDD, maxConsistency)) 
                                               $ nodes inferredNetwork
 
-{- 
-Testing:
 
 -- sample nodes
 x_1 :: NodeState
@@ -230,4 +240,3 @@ x_6 = NodeState "x_6" [1, 1, 0, 0, 1, 1, 1, 0]
 
 sampleNodes :: [NodeState]
 sampleNodes = [x_1,x_2,x_3,x_4,x_5,x_6]
--}

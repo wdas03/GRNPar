@@ -24,20 +24,21 @@ main = do
         [fname, outputFile, k, genExpressions, genImage, mode] -> do
                 putStrLn fname
                 putStrLn "Parsing data..."
-                nodeStates <- csvToNodeStates fname 1
+                nodeStates@(x:_) <- csvToNodeStates fname 1
                 
                 -- Generate network with dependencies
-                let k'      = read k :: Int
-                    network = if mode == "par" 
-                                then genNetworkPar nodeStates k'
-                                else genNetworkSeq nodeStates k'
+                let k'         = read k :: Int
+                    timeLength = length $ timeStates x
+                    network    = if mode == "par" 
+                                    then genNetworkPar nodeStates k'
+                                    else genNetworkSeq nodeStates k'
                 putStrLn "Generated network."
 
                 when (genExpressions == "1") $ do
                     -- Get optimal boolean expressions for each node
                     let optimalExpressions = if mode == "par" 
-                                                then getOptimalBoolExpressionsPar network k' 
-                                                else getOptimalBoolExpressions network k'
+                                                then getOptimalBoolExpressionsPar network timeLength
+                                                else getOptimalBoolExpressions network timeLength
                     putStrLn "Optimal boolean expressions for each variable:"
                     mapM_ (\(n, b, c) -> putStrLn $ name n ++ ": " ++ intercalate "," [show b, show c]) optimalExpressions
                     --print optimalExpressions
