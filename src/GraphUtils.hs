@@ -2,7 +2,6 @@ module GraphUtils
     ( NodeState(..)
     , BoolEdge(..)
     , BoolNetwork(..)
-    , getRegulatoryNodes
     , plotBoolNetworkPng
     , plotDGPng
     ) where
@@ -55,17 +54,6 @@ data BoolNetwork = BoolNetwork { nodes :: [NodeState]
                                , connections :: [BoolEdge] } deriving (Eq, Show) 
 instance NFData BoolNetwork where
     rnf (BoolNetwork n c) = rnf n `seq` rnf c 
-               
-
-{-
-Get regulatory genes of node given target node and boolean network.
-
-Params:
-- targetNode: target gene  
-- network   : BoolNetwork
--}
-getRegulatoryNodes :: NodeState -> BoolNetwork -> [NodeState]
-getRegulatoryNodes targetNode network = map v_i $ filter (\(BoolEdge _ out) -> out == targetNode) $ connections network
 
 {-
 Modified from graphite lib source code:
@@ -87,7 +75,6 @@ foundationUniverse = DG.fromArcsList
 plotDGraphPng foundationUniverse "foundation"
 
 -}
-
 -- Plot a BoolNetwork to png file
 boolNetworkToDG :: BoolNetwork -> Bool -> DG.DGraph String String
 boolNetworkToDG network labelEdges = DG.fromArcsList 

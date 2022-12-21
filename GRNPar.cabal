@@ -27,7 +27,7 @@ library
   exposed-modules:
       BDDUtils
       GraphUtils
-      Lib
+      GRNPar
       ProcessData
   other-modules:
       Paths_GRNPar
