@@ -157,14 +157,15 @@ Params:
 getRegulatoryNodes :: NodeState -> BoolNetwork -> [NodeState]
 getRegulatoryNodes targetNode network = map v_i $ filter (\(BoolEdge _ out) -> out == targetNode) $ connections network
 
+
 {-
 Compute genewise dynamics consistency metric for every possible boolean expression with input nodes mapping to target node.
 -}
 searchUpdateRule :: [NodeState] -> NodeState -> Int -> [(Double, BDD)]
 searchUpdateRule inpNodes targetNode timeLength = 
   case allTargetStates of 
-      [] -> error "Invalid target states."
-      [_] -> error "Invalid target states."
+      []               -> error "Invalid target states."
+      [_]              -> error "Invalid target states."
       (_:targetStates) -> map (\(p, r) -> (geneWiseDynamicsConsistency p targetStates, r)) predStates
   where
     -- Get target states of target node
@@ -187,8 +188,8 @@ searchUpdateRule inpNodes targetNode timeLength =
 searchUpdateRulePar :: [NodeState] -> NodeState -> Int -> [(Double, BDD)]
 searchUpdateRulePar inpNodes targetNode timeLength = 
   case allTargetStates of 
-      [] -> error "Invalid target states."
-      [_] -> error "Invalid target states."
+      []               -> error "Invalid target states."
+      [_]              -> error "Invalid target states."
       (_:targetStates) -> map (\(p, r) -> (geneWiseDynamicsConsistency p targetStates, r)) predStates
   where
     -- Get target states of target node
@@ -230,25 +231,3 @@ getOptimalBoolExpressionsPar inferredNetwork k = map (\targetNode ->
                                                         in (targetNode, optimalBDD, maxConsistency)) 
                                                  (nodes inferredNetwork)
                                                  `using` parListChunk 50 rdeepseq
-
--- sample nodes
-x_1 :: NodeState
-x_1 = NodeState "x_1" [1, 1, 0, 0, 0, 1, 0, 1]
-
-x_2 :: NodeState
-x_2 = NodeState "x_2" [1, 0, 1, 0, 1, 0, 1, 0]
-
-x_3 :: NodeState
-x_3 = NodeState "x_3" [1, 0, 1, 0, 1, 0, 1, 0]
-
-x_4 :: NodeState
-x_4 = NodeState "x_4" [1, 0, 0, 0, 1, 0, 1, 1]
-
-x_5 :: NodeState
-x_5 = NodeState "x_5" [1, 0, 1, 0, 0, 0, 0, 0]
-
-x_6 :: NodeState
-x_6 = NodeState "x_6" [1, 1, 0, 0, 1, 1, 1, 0]
-
-sampleNodes :: [NodeState]
-sampleNodes = [x_1,x_2,x_3,x_4,x_5,x_6]

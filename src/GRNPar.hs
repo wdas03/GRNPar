@@ -12,12 +12,7 @@ import qualified Data.Map as Map
 import Data.Ord (comparing)
 import Data.List (maximumBy)
 
-import GraphUtils (plotDGPng, plotBoolNetworkPng, NodeState(..), BoolEdge(..), BoolNetwork(..))
-import BDDUtils (evaluateFunc, BDD(..))
-
-import Data.Graph.DGraph as DG
-import Data.Graph.Types as GT
-import Data.Graph.UGraph as UG
+import GraphUtils (NodeState(..), BoolEdge(..), BoolNetwork(..))
 
 import Control.Parallel.Strategies (parMap, rdeepseq, parBuffer, using)
 import Control.DeepSeq ()
@@ -26,7 +21,8 @@ import Control.DeepSeq ()
 instance Show BoolNetwork where
   show (BoolNetwork nodes edges) = "(" ++ intercalate ", " [name, show state] ++ ")"-}
 
--- sample nodes
+{-
+-- Testing with sample nodes:
 x_1 :: NodeState
 x_1 = NodeState "x_1" [1, 1, 0, 0, 0, 1, 0, 1]
 
@@ -47,6 +43,7 @@ x_6 = NodeState "x_6" [1, 1, 0, 0, 1, 1, 1, 0]
 
 sampleNodes :: [NodeState]
 sampleNodes = [x_1,x_2,x_3,x_4,x_5,x_6]
+-}
 
 {-
 Parallel pipeline for inferring boolean network given NodeState data.

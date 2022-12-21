@@ -15,8 +15,14 @@ import ProcessData (csvToNodeStates)
 
 import Control.DeepSeq
 
--- Main loop
--- Usage: GRNPar-exe <csvFilename> <k> <outputFile> <genExpressions> <genImage> <mode>
+{-
+Main script: 
+    1. Infer + generate boolean network from input file
+    2. Determine optimal boolean expression
+    3. Output network to png file
+
+Usage: GRNPar-exe <csvFilename> <k> <outputFile> <genExpressions> <genImage> <mode>
+-}
 main :: IO ()
 main = do
     args <- getArgs
