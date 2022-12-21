@@ -87,10 +87,10 @@ boolNetworkToDG network labelEdges = DG.fromArcsList
 -- Plot a BoolNetwork to png file
 boolNetworkToDGPar :: BoolNetwork -> Bool -> DG.DGraph String String
 boolNetworkToDGPar network labelEdges = DG.fromArcsList 
-                                        $ map  (\(BoolEdge inp out) -> 
+                                        (map  (\(BoolEdge inp out) -> 
                                         GT.Arc (name inp) (name out) (if labelEdges then "test" else "")) 
                                         (connections network) 
-                                        `using` parListChunk 50 rdeepseq
+                                        `using` parListChunk 50 rdeepseq)
 
 -- Plot BoolNetwork to png file
 plotBoolNetworkPng :: BoolNetwork -> FilePath -> Bool -> IO FilePath
