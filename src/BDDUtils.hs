@@ -159,7 +159,12 @@ getRegulatoryNodes targetNode network = map v_i $ filter (\(BoolEdge _ out) -> o
 
 
 {-
-Compute genewise dynamics consistency metric for every possible boolean expression with input nodes mapping to target node.
+Compute genewise dynamics consistency metric for possible boolean expressions in input nodes sorted by mutual information.
+
+Params:
+ - inpNodes :: [NodeState] -> top k input nodes with highest mutual information with respect to targetNode
+ - targetNode :: NodeState
+ - timeLength :: Int -> length of time series
 -}
 searchUpdateRule :: [NodeState] -> NodeState -> Int -> [(Double, BDD)]
 searchUpdateRule inpNodes targetNode timeLength = 

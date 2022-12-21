@@ -24,25 +24,25 @@ From GRNPar directory, run:
 
 To run the executable, run:
 
-> `stack exec GRNPar-exe <csvFilename> <k> <outputFile> <genExpressions> <genImage> <mode>`
+> `stack exec GRNPar-exe <csvFilename> <k> <genExpressions> <genImage> <mode>`
 
 - _csvFilename_: gene-expression time-series data
 - _k_: fixed number of input nodes for each target node
-- _outputFile_: output png filename for generated boolean network
 - _genExpressions_: whether or not to generate boolean expressions for each node (1 == True, 0 = False)
-- _genImage_: whether or not to generate image of boolean network for each node (1 == True, 0 = False)
+- _genImage_: whether or not to generate image of boolean network (1 == True, 0 = False)
+  - If 1, then outputFile will be equal to csvFilename with png extension
 - _mode_: "seq" or "par" (seq for sequential algorithm and par for parallel implementation)
 
 ### Example
 To run parallel implementation on 4 cores, and only generate an image:
   
-> `stack exec GRNPar-exe "src/data/nodes_100_time_300.csv" "./src/output_files/nodes_100_time_300" 3 0 1 par -- +RTS -N4 -lf -s -threaded`
+> `stack exec GRNPar-exe "src/data/nodes_100_time_300.csv" 3 0 1 par -- +RTS -N4 -lf -s -threaded`
 >
 > `threadscope GRNPar-exe.eventlog`
 
 To run on E. coli dataset with _k_ = 4:
 
-> `stack exec GRNPar-exe "src/data/e_coli.csv" "./src/output_files/ecoli" 4 0 1 par -- +RTS -N8 -lf -s -threaded`
+> `stack exec GRNPar-exe "src/data/e_coli.csv" 4 0 1 par -- +RTS -N8 -lf -s -threaded`
 
 ### Generating Random Gene Expression Data
 _Requires Python and pandas._

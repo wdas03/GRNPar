@@ -10,16 +10,12 @@ import Control.Monad ()
 
 import qualified Data.Map as Map
 import Data.Ord (comparing)
-import Data.List (maximumBy)
+import Data.List (maximumBy, sortBy)
 
 import GraphUtils (NodeState(..), BoolEdge(..), BoolNetwork(..))
 
 import Control.Parallel.Strategies (parMap, rdeepseq, parBuffer, using)
 import Control.DeepSeq ()
-        
-{-
-instance Show BoolNetwork where
-  show (BoolNetwork nodes edges) = "(" ++ intercalate ", " [name, show state] ++ ")"-}
 
 {-
 -- Testing with sample nodes:
@@ -58,19 +54,19 @@ genNetworkSeq :: [NodeState] -> Int -> BoolNetwork
 genNetworkSeq nodeStates k = BoolNetwork nodeStates (combineEdgesSeq nodeStates k)
 
 {-
-Params:
+Combine all BoolEdge connections for each target node into one array.
 -}
 combineEdgesSeq :: [NodeState] -> Int -> [BoolEdge]
 combineEdgesSeq nodeStates k = concatMap (genBoolEdgesSeq nodeStates k) nodeStates
 
+{- 
+Generate BoolEdge connections in network given NodeState and a targetNode
+-}
 genBoolEdgesSeq :: [NodeState] -> Int -> NodeState -> [BoolEdge]
 genBoolEdgesSeq nodeStates k targetNode = 
   let topKMutual = getMutualInfoSeq targetNode (filter (/= targetNode) nodeStates) k
   in map (`BoolEdge` targetNode) topKMutual
 
-{-
-Params:
--}
 combineEdgesPar :: [NodeState] -> Int -> [BoolEdge]
 combineEdgesPar nodeStates k = concat $ parMap rdeepseq (genBoolEdgesPar nodeStates k) nodeStates
 
@@ -80,54 +76,50 @@ genBoolEdgesPar nodeStates k targetNode = map (`BoolEdge` targetNode) topKMutual
     topKMutual = getMutualInfoPar targetNode (filter (/= targetNode) nodeStates) k 
 
 {-
-Get top k nodes with the highest mutual information relative to a target node.
+Get top k input nodes with the highest mutual information relative to a target node.
 
-Params:
-- targetNode:
-- inputNodes:
-- k         :
+Return input nodes sorted descending based on mutual information with target node.
 
 * inputNodes should not contain targetNode when calling getMutualInfo
 -}
 getMutualInfoSeq :: NodeState -> [NodeState] -> Int -> [NodeState]
-getMutualInfoSeq targetNode inputNodes k = getMutualInfo' [maxMutualInfo] (filter (/= maxMutualInfo) inputNodes) k
+getMutualInfoSeq targetNode inputNodes k = map fst 
+                                          $ sortBy (flip (comparing snd)) 
+                                          $ getMutualInfo' [maxMutualNodeInfo] 
+                                          (filter (/= maxMutual) inputNodes) k
   where
-    (maxMutualInfo, _) = maximumBy (comparing snd) $ map (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode))) inputNodes
-    getMutualInfo' :: [NodeState] -> [NodeState] -> Int -> [NodeState]
+    maxMutualNodeInfo@(maxMutual, _) = maximumBy (comparing snd) 
+                                       $ map (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode))) inputNodes
+    getMutualInfo' :: [(NodeState, Double)] -> [NodeState] -> Int -> [(NodeState, Double)]
     getMutualInfo' regNodes inpNodes k'
         | length regNodes == k' = regNodes
         | otherwise             =
-          let (newMax, _) = maximumBy (comparing snd)
-                            $ map (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode)
-                                            - sum (map (mutualInformation (timeStates inp) . timeStates) regNodes))) inpNodes
-              newInpNodes = filter (/= newMax) inpNodes
-              newRegNodes = regNodes ++ [newMax]
+          let newMaxInfo@(newMax, _) = maximumBy (comparing snd)
+                                       $ map (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode)
+                                                - sum (map (mutualInformation (timeStates inp) . timeStates) $ map fst regNodes))) inpNodes
+              newInpNodes            = filter (/= newMax) inpNodes
+              newRegNodes            = regNodes ++ [newMaxInfo]
           in getMutualInfo' newRegNodes newInpNodes k'
 
-{-
-Get top k nodes with the highest mutual information relative to a target node.
-
-Params:
-- targetNode:
-- inputNodes:
-- k         :
-
-* inputNodes should not contain targetNode when calling getMutualInfo
--}
 getMutualInfoPar :: NodeState -> [NodeState] -> Int -> [NodeState]
-getMutualInfoPar targetNode inputNodes k = getMutualInfo' [maxMutualInfo] (filter (/= maxMutualInfo) inputNodes) k
+getMutualInfoPar targetNode inputNodes k = map fst 
+                                          $ sortBy (flip (comparing snd)) 
+                                          $ getMutualInfo' [maxMutualNodeInfo] 
+                                          (filter (/= maxMutual) inputNodes) k
   where
-    mutualInfo'        = map (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode))) inputNodes `using` parBuffer 3 rdeepseq
-    (maxMutualInfo, _) = maximumBy (comparing snd) mutualInfo'
-    getMutualInfo' :: [NodeState] -> [NodeState] -> Int -> [NodeState]
+    mutualInfo'                      = map (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode)))
+                                            inputNodes `using` parBuffer 3 rdeepseq
+    maxMutualNodeInfo@(maxMutual, _) = maximumBy (comparing snd) mutualInfo'
+    getMutualInfo' :: [(NodeState, Double)] -> [NodeState] -> Int -> [(NodeState, Double)]
     getMutualInfo' regNodes inpNodes k'
         | length regNodes == k' = regNodes
         | otherwise             =
-          let allMutualInfo= map (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode)
-                                            - sum (parMap rdeepseq (mutualInformation (timeStates inp) . timeStates) regNodes))) inpNodes `using` parBuffer 3 rdeepseq
-              (newMax, _)   = maximumBy (comparing snd) allMutualInfo 
-              newInpNodes   = filter (/= newMax) inpNodes
-              newRegNodes   = regNodes ++ [newMax]
+          let allMutualInfo          = map (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode)
+                                            - sum (parMap rdeepseq (mutualInformation (timeStates inp) . timeStates) $ map fst regNodes))) 
+                                              inpNodes `using` parBuffer 3 rdeepseq
+              newMaxInfo@(newMax, _) = maximumBy (comparing snd) allMutualInfo 
+              newInpNodes            = filter (/= newMax) inpNodes
+              newRegNodes            = regNodes ++ [newMaxInfo]
           in getMutualInfo' newRegNodes newInpNodes k'
 
 -- Compute the entropy of a list of numerical values

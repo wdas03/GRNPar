@@ -27,7 +27,7 @@ main :: IO ()
 main = do
     args <- getArgs
     case args of 
-        [fname, outputFile, k, genExpressions, genImage, mode] -> do
+        [fname, k, genExpressions, genImage, mode] -> do
                 putStrLn fname
                 putStrLn "Parsing data..."
                 nodeStates@(x:_) <- csvToNodeStates fname 1
@@ -51,6 +51,7 @@ main = do
 
                 when (genImage == "1") $ do
                     -- Print image
+                    let outputFile = substring 0 (length fname - 4) fname
                     imgFilepath <- if mode == "par"
                                      then plotBoolNetworkPngPar network outputFile False
                                      else plotBoolNetworkPng network outputFile False
@@ -58,3 +59,6 @@ main = do
 
                 putStrLn "Finished."
         _       -> putStrLn "Usage: GRNPar-exe <csvFilename> <k> <outputFile> <genExpressions> <genImage> <mode>"
+
+substring :: Int -> Int -> String -> String
+substring x y s = take (y - x) (drop x s)

@@ -5,8 +5,10 @@ Main script for generating random large datasets of input/output gene expression
 
 import random
 import pandas as pd
+import numpy as np
 import argparse
 
+from sklearn.cluster import KMeans
 
 def generate_io_pairs(num_nodes, time):
     nodes = ["v" + str(i) for i in range(1, num_nodes + 1)] + ["v" + str(i) + "'" for i in range(1, num_nodes + 1)]
@@ -76,8 +78,9 @@ def parse_args():
 
 # Example: python generate_data.py --numNodes 100 --time 300 --outputFile "test.csv"
 if __name__ == "__main__":
-    args = parse_args()
-    data = generate_data_time_series(args.numNodes, args.time)
-    print(data)
-    output_data_to_file(data, args.outputFile)
+    discretize_kmeans("src/data/InSilicoSize100-Ecoli1-nonoise-proteins-trajectories.tsv")
+    #args = parse_args()
+    #data = generate_data_time_series(args.numNodes, args.time)
+    #print(data)
+    #output_data_to_file(data, args.outputFile)
     
