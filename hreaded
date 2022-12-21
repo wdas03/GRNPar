@@ -1,2 +1,2 @@
-'/Users/williamdas/Documents/Parallel Functional Programming (Fall 2022)/Final Project/GRNPar/.stack-work/install/aarch64-osx/4c78f489fc43bc8978d62ecfb40dc41ee063577401813f1d815890ab66cb1a4c/9.2.5/bin/GRNPar-exe' 'src/data/e_coli.csv' '7' '1' '0' 'par' +RTS '-N' '-N4' '-lf' '-s' '-threaded' 
-<<ghc: 51829800 bytes, 5 GCs, 113300/143488 avg/max bytes residency (2 samples), 21M in use, 0.000 INIT (0.004 elapsed), 0.017 MUT (0.008 elapsed), 0.001 GC (0.005 elapsed) :ghc>>
+'/Users/williamdas/Documents/Parallel Functional Programming (Fall 2022)/Final Project/GRNPar/.stack-work/install/aarch64-osx/4c78f489fc43bc8978d62ecfb40dc41ee063577401813f1d815890ab66cb1a4c/9.2.5/bin/GRNPar-exe' 'src/data/e_coli.csv' '7' '1' '1' 'par' +RTS '-N' '-N4' '-lf' '-s' '-threaded' 
+<<ghc: 51036744 bytes, 6 GCs, 139616/146312 avg/max bytes residency (2 samples), 22M in use, 0.000 INIT (0.006 elapsed), 0.043 MUT (0.217 elapsed), 0.001 GC (0.008 elapsed) :ghc>>

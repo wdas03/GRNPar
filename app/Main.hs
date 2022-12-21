@@ -51,10 +51,11 @@ main = do
 
                 when (genImage == "1") $ do
                     -- Print image
-                    let outputFile = substring 0 (length fname - 4) fname
+                    let outputFile = "src/output_files/" ++ substring (length "src/data/") (length fname - 4) fname
+                    print outputFile
                     imgFilepath <- if mode == "par"
-                                     then plotBoolNetworkPngPar network outputFile False
-                                     else plotBoolNetworkPng network outputFile False
+                                       then plotBoolNetworkPngPar network outputFile False
+                                       else plotBoolNetworkPng network outputFile False
                     putStrLn $ "Printed to " ++ imgFilepath ++ "."
 
                 putStrLn "Finished."
