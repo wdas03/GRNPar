@@ -3,6 +3,7 @@ module GraphUtils
     , BoolEdge(..)
     , BoolNetwork(..)
     , plotBoolNetworkPng
+    , plotBoolNetworkPngPar
     , plotDGPng
     ) where
 
@@ -10,6 +11,7 @@ import Data.GraphViz
 import Data.GraphViz.Attributes.Complete
 import Data.Hashable
 
+import Control.Parallel.Strategies (parMap, rdeepseq)
 import Control.DeepSeq ( NFData(..) )
 
 import qualified Data.Text.Lazy    as TL
@@ -82,10 +84,23 @@ boolNetworkToDG network labelEdges = DG.fromArcsList
                                         GT.Arc (name inp) (name out) (if labelEdges then "test" else "")) 
                                         (connections network) 
 
+-- Plot a BoolNetwork to png file
+boolNetworkToDGPar :: BoolNetwork -> Bool -> DG.DGraph String String
+boolNetworkToDGPar network labelEdges = DG.fromArcsList 
+                                    $ parMap rdeepseq (\(BoolEdge inp out) -> 
+                                        GT.Arc (name inp) (name out) (if labelEdges then "test" else "")) 
+                                        (connections network) 
+
+-- Plot BoolNetwork to png file
 plotBoolNetworkPng :: BoolNetwork -> FilePath -> Bool -> IO FilePath
 plotBoolNetworkPng network fname labelEdges = plotDGPng networkDG fname labelEdges
   where
     networkDG = boolNetworkToDG network labelEdges
+
+plotBoolNetworkPngPar :: BoolNetwork -> FilePath -> Bool -> IO FilePath
+plotBoolNetworkPngPar network fname labelEdges = plotDGPng networkDG fname labelEdges
+  where
+    networkDG = boolNetworkToDGPar network labelEdges
 
 -- | Plot a directed 'DGraph' to a PNG image file
 plotDGPng :: (Hashable v, Ord v, PrintDot v, Show v, Show e)

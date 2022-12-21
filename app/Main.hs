@@ -11,7 +11,7 @@ import Control.Monad
 import Data.List (intercalate)
 
 import GRNPar (genNetworkSeq, genNetworkPar)
-import GraphUtils (plotBoolNetworkPng, NodeState(..))
+import GraphUtils (plotBoolNetworkPng, plotBoolNetworkPngPar, NodeState(..))
 import BDDUtils (getOptimalBoolExpressions, getOptimalBoolExpressionsPar)
 import ProcessData (csvToNodeStates)
 
@@ -42,12 +42,14 @@ main = do
                                                 then force $ getOptimalBoolExpressionsPar network timeLength
                                                 else force $ getOptimalBoolExpressions network timeLength
                     putStrLn "Optimal boolean expressions for each variable:"
-                    mapM_ (\(n, b, c) -> putStrLn $ name n ++ ": " ++ intercalate "," [show b, show c]) optimalExpressions
+                    mapM_ (\(n, b, c) -> putStrLn $ name n ++ " = " ++ show b ++ ". Gene-wise consistency: " ++ show c) optimalExpressions
                     --print optimalExpressions
 
                 when (genImage == "1") $ do
                     -- Print image
-                    imgFilepath <- plotBoolNetworkPng network outputFile False
+                    imgFilepath <- if mode == "par"
+                                     then plotBoolNetworkPngPar network outputFile False
+                                     else plotBoolNetworkPng network outputFile False
                     putStrLn $ "Printed to " ++ imgFilepath ++ "."
 
                 putStrLn "Finished."
