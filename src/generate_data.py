@@ -8,8 +8,6 @@ import pandas as pd
 import numpy as np
 import argparse
 
-from sklearn.cluster import KMeans
-
 def generate_io_pairs(num_nodes, time):
     nodes = ["v" + str(i) for i in range(1, num_nodes + 1)] + ["v" + str(i) + "'" for i in range(1, num_nodes + 1)]
     state_series = []
