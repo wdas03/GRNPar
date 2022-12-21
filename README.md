@@ -31,7 +31,7 @@ To run the executable, run:
 - _outputFile_: output png filename for generated boolean network
 - _genExpressions_: whether or not to generate boolean expressions for each node (1 == True, 0 = False)
 - _genImage_: whether or not to generate image of boolean network for each node (1 == True, 0 = False)
-- - _mode_: "seq" or "par" (seq for sequential algorithm and par for parallel implementation)
+- _mode_: "seq" or "par" (seq for sequential algorithm and par for parallel implementation)
 
 ### Example
 To run parallel implementation on 4 cores, and only generate an image:
