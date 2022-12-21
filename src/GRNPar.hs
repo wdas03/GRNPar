@@ -19,7 +19,7 @@ import Data.Graph.DGraph as DG
 import Data.Graph.Types as GT
 import Data.Graph.UGraph as UG
 
-import Control.Parallel.Strategies (parMap, rdeepseq)
+import Control.Parallel.Strategies (parMap, rdeepseq, parBuffer, using)
 import Control.DeepSeq ()
         
 {-
@@ -69,18 +69,18 @@ combineEdgesSeq nodeStates k = concatMap (genBoolEdgesSeq nodeStates k) nodeStat
 genBoolEdgesSeq :: [NodeState] -> Int -> NodeState -> [BoolEdge]
 genBoolEdgesSeq nodeStates k targetNode = 
   let topKMutual = getMutualInfoSeq targetNode (filter (/= targetNode) nodeStates) k
-  in map(`BoolEdge` targetNode) topKMutual
+  in map (`BoolEdge` targetNode) topKMutual
 
 {-
 Params:
 -}
 combineEdgesPar :: [NodeState] -> Int -> [BoolEdge]
-combineEdgesPar nodeStates k = concat (parMap rdeepseq (genBoolEdgesPar nodeStates k) nodeStates)
+combineEdgesPar nodeStates k = concat $ parMap rdeepseq (genBoolEdgesPar nodeStates k) nodeStates
 
 genBoolEdgesPar :: [NodeState] -> Int -> NodeState -> [BoolEdge]
-genBoolEdgesPar nodeStates k targetNode = 
-  let topKMutual = getMutualInfoPar targetNode (filter (/= targetNode) nodeStates) k
-  in  parMap rdeepseq (`BoolEdge` targetNode) topKMutual
+genBoolEdgesPar nodeStates k targetNode = map (`BoolEdge` targetNode) topKMutual
+  where
+    topKMutual = getMutualInfoPar targetNode (filter (/= targetNode) nodeStates) k 
 
 {-
 Get top k nodes with the highest mutual information relative to a target node.
@@ -120,13 +120,14 @@ Params:
 getMutualInfoPar :: NodeState -> [NodeState] -> Int -> [NodeState]
 getMutualInfoPar targetNode inputNodes k = getMutualInfo' [maxMutualInfo] (filter (/= maxMutualInfo) inputNodes) k
   where
-    (maxMutualInfo, _) = maximumBy (comparing snd) $ parMap rdeepseq (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode))) inputNodes
+    mutualInfo'        = map (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode))) inputNodes `using` parBuffer 3 rdeepseq
+    (maxMutualInfo, _) = maximumBy (comparing snd) mutualInfo'
     getMutualInfo' :: [NodeState] -> [NodeState] -> Int -> [NodeState]
     getMutualInfo' regNodes inpNodes k'
         | length regNodes == k' = regNodes
         | otherwise             =
-          let allMutualInfo= parMap rdeepseq (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode)
-                                            - sum (parMap rdeepseq (mutualInformation (timeStates inp) . timeStates) regNodes))) inpNodes 
+          let allMutualInfo= map (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode)
+                                            - sum (parMap rdeepseq (mutualInformation (timeStates inp) . timeStates) regNodes))) inpNodes `using` parBuffer 3 rdeepseq
               (newMax, _)   = maximumBy (comparing snd) allMutualInfo 
               newInpNodes   = filter (/= newMax) inpNodes
               newRegNodes   = regNodes ++ [newMax]

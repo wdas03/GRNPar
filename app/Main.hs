@@ -15,6 +15,8 @@ import GraphUtils (plotBoolNetworkPng, NodeState(..))
 import BDDUtils (getOptimalBoolExpressions, getOptimalBoolExpressionsPar)
 import ProcessData (csvToNodeStates)
 
+import Control.DeepSeq
+
 -- Main loop
 -- Usage: GRNPar-exe <csvFilename> <k> <outputFile> <genExpressions> <genImage> <mode>
 main :: IO ()
@@ -30,15 +32,15 @@ main = do
                 let k'         = read k :: Int
                     timeLength = length $ timeStates x
                     network    = if mode == "par" 
-                                    then genNetworkPar nodeStates k'
-                                    else genNetworkSeq nodeStates k'
+                                    then force $ genNetworkPar nodeStates k'
+                                    else force $ genNetworkSeq nodeStates k'
                 putStrLn "Generated network."
 
                 when (genExpressions == "1") $ do
                     -- Get optimal boolean expressions for each node
                     let optimalExpressions = if mode == "par" 
-                                                then getOptimalBoolExpressionsPar network timeLength
-                                                else getOptimalBoolExpressions network timeLength
+                                                then force $ getOptimalBoolExpressionsPar network timeLength
+                                                else force $ getOptimalBoolExpressions network timeLength
                     putStrLn "Optimal boolean expressions for each variable:"
                     mapM_ (\(n, b, c) -> putStrLn $ name n ++ ": " ++ intercalate "," [show b, show c]) optimalExpressions
                     --print optimalExpressions
