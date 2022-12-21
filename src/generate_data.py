@@ -76,9 +76,8 @@ def parse_args():
 
 # Example: python generate_data.py --numNodes 100 --time 300 --outputFile "test.csv"
 if __name__ == "__main__":
-    discretize_kmeans("src/data/InSilicoSize100-Ecoli1-nonoise-proteins-trajectories.tsv")
-    #args = parse_args()
-    #data = generate_data_time_series(args.numNodes, args.time)
-    #print(data)
-    #output_data_to_file(data, args.outputFile)
+    args = parse_args()
+    data = generate_data_time_series(args.numNodes, args.time)
+    print(data)
+    output_data_to_file(data, args.outputFile)
     
