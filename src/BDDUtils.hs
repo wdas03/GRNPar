@@ -4,6 +4,7 @@ module BDDUtils
     ( BDD(..)
     , evaluateFunc
     , getOptimalBoolExpressions
+    , getOptimalBoolExpressionsPar
     ) where
 
 import GraphUtils (NodeState(..), BoolEdge(..), BoolNetwork(..))
@@ -14,6 +15,7 @@ import Data.List (maximumBy)
 import qualified Data.Matrix as M
 import qualified Data.Vector as Vec
 
+import Control.Parallel.Strategies (parMap, rdeepseq)
 import Control.DeepSeq(NFData(..))
 
 {-
@@ -151,6 +153,9 @@ Params:
 getRegulatoryNodes :: NodeState -> BoolNetwork -> [NodeState]
 getRegulatoryNodes targetNode network = map v_i $ filter (\(BoolEdge _ out) -> out == targetNode) $ connections network
 
+getRegulatoryNodesPar :: NodeState -> BoolNetwork -> [NodeState]
+getRegulatoryNodesPar targetNode network = parMap rdeepseq v_i $ filter (\(BoolEdge _ out) -> out == targetNode) $ connections network
+
 {-
 
 -}
@@ -168,6 +173,20 @@ searchUpdateRule inpNodes targetNode timeLength = map (\(p, r) -> (geneWiseDynam
                         in (p, ruleBDD))
                         ruleCombos
 
+searchUpdateRulePar :: [NodeState] -> NodeState -> Int -> [(Double, BDD)]
+searchUpdateRulePar inpNodes targetNode timeLength = parMap rdeepseq (\(p, r) -> (geneWiseDynamicsConsistency p targetStates, r)) predStates
+  where
+    ruleCombos   = parMap rdeepseq (getBDDFromFunc inpNodeNames) $ getConjDisjCombos (length inpNodes)
+    (_:targetStates) = timeStates targetNode
+    inpNodeNames = parMap rdeepseq name inpNodes
+    inpMatrix    = M.fromLists $ parMap rdeepseq (\xs -> map (name xs,) (timeStates xs)) inpNodes
+    predStates   = parMap rdeepseq (\ruleBDD ->
+                        let p = parMap rdeepseq (fromEnum . \t -> evaluateFunc ruleBDD (filter (\(nn, _) -> nn `elem` inpNodeNames)
+                                              $ Vec.toList  (M.getCol t inpMatrix)))
+                                              [1..(timeLength - 1)]
+                        in (p, ruleBDD))
+                        ruleCombos
+
 {-
 Get optimal boolean expressions for each node in network that optimizes genewise dynamics consistency.
 -}
@@ -178,6 +197,17 @@ getOptimalBoolExpressions inferredNetwork k = map (\targetNode ->
                                                     (maxConsistency, optimalBDD) = maximumBy (comparing fst) consistencyMetrics
                                                 in (targetNode, optimalBDD, maxConsistency)) 
                                               $ nodes inferredNetwork
+
+getOptimalBoolExpressionsPar :: BoolNetwork -> Int -> [(NodeState, BDD, Double)]
+getOptimalBoolExpressionsPar inferredNetwork k = parMap rdeepseq (\targetNode -> 
+                                                let inpNodes                     = getRegulatoryNodesPar targetNode inferredNetwork
+                                                    consistencyMetrics           = searchUpdateRulePar inpNodes targetNode k
+                                                    (maxConsistency, optimalBDD) = maximumBy (comparing fst) consistencyMetrics
+                                                in (targetNode, optimalBDD, maxConsistency)) 
+                                              $ nodes inferredNetwork
+
+{- 
+Testing:
 
 -- sample nodes
 x_1 :: NodeState
@@ -200,3 +230,4 @@ x_6 = NodeState "x_6" [1, 1, 0, 0, 1, 1, 1, 0]
 
 sampleNodes :: [NodeState]
 sampleNodes = [x_1,x_2,x_3,x_4,x_5,x_6]
+-}

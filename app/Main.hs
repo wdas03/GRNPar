@@ -12,7 +12,7 @@ import Data.List (intercalate)
 
 import GRNPar (genNetworkSeq, genNetworkPar)
 import GraphUtils (plotBoolNetworkPng, NodeState(..))
-import BDDUtils (getOptimalBoolExpressions)
+import BDDUtils (getOptimalBoolExpressions, getOptimalBoolExpressionsPar)
 import ProcessData (csvToNodeStates)
 
 -- Main loop
@@ -21,7 +21,7 @@ main :: IO ()
 main = do
     args <- getArgs
     case args of 
-        [fname, outputFile, k, mode, genExpressions, genImage] -> do
+        [fname, outputFile, k, genExpressions, genImage, mode] -> do
                 putStrLn fname
                 putStrLn "Parsing data..."
                 nodeStates <- csvToNodeStates fname 1
@@ -35,7 +35,9 @@ main = do
 
                 when (genExpressions == "1") $ do
                     -- Get optimal boolean expressions for each node
-                    let optimalExpressions = getOptimalBoolExpressions network k'
+                    let optimalExpressions = if mode == "par" 
+                                                then getOptimalBoolExpressionsPar network k' 
+                                                else getOptimalBoolExpressions network k'
                     putStrLn "Optimal boolean expressions for each variable:"
                     mapM_ (\(n, b, c) -> putStrLn $ name n ++ ": " ++ intercalate "," [show b, show c]) optimalExpressions
                     --print optimalExpressions
@@ -46,4 +48,4 @@ main = do
                     putStrLn $ "Printed to " ++ imgFilepath ++ "."
 
                 putStrLn "Finished."
-        _           -> putStrLn "Usage: grnPAR-exe <csvFilename> <k> <outputFile> <mode> <genExpressions> <genImage>"
+        _       -> putStrLn "Usage: grnPAR-exe <csvFilename> <k> <outputFile> <mode> <genExpressions> <genImage>"
