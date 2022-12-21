@@ -199,7 +199,7 @@ searchUpdateRulePar inpNodes targetNode timeLength =
     inpMatrix        = M.fromLists $ map (\xs -> map (name xs,) (timeStates xs) `using` parBuffer 50 rdeepseq) inpNodes
 
     -- Get boolean expression combos
-    ruleCombos       = parMap rdeepseq (getBDDFromFunc inpNodeNames) (getConjDisjCombos (length inpNodes))
+    ruleCombos       = map (getBDDFromFunc inpNodeNames) (getConjDisjCombos (length inpNodes)) `using` parBuffer 100 rdeepseq
     
     -- Predict states using boolean expression
     predStates       = parMap rdeepseq (\ruleBDD ->
