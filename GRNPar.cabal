@@ -87,13 +87,13 @@ test-suite GRNPar-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -eventlog -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      GRNPar
+    , base >=4.7 && <5
     , bytestring
     , containers
     , deepseq
     , graphite
     , graphviz
-    , grnPAR
     , hashable
     , list-extras
     , matrix

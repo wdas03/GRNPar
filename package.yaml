@@ -78,4 +78,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - grnPAR
+    - GRNPar
