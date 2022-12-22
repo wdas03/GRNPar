@@ -36,13 +36,15 @@ To run the executable, run:
 ### Example
 To run parallel implementation on 4 cores, and only generate an image:
   
-> `stack exec GRNPar-exe "src/data/nodes_100_time_300.csv" 3 0 1 par -- +RTS -N4 -lf -s -threaded`
+> `stack exec GRNPar-exe "src/data/nodes_100_time_300.csv" 3 0 1 par -- +RTS -ls -N4`
 >
 > `threadscope GRNPar-exe.eventlog`
 
 To run on E. coli dataset on 8 cores with _k_ = 4:
 
-> `stack exec GRNPar-exe "src/data/e_coli.csv" 4 0 1 par -- +RTS -N8 -lf -s -threaded`
+> `stack exec GRNPar-exe "src/data/e_coli.csv" 4 0 1 par -- +RTS -ls -N8`
+> 
+> `threadscope GRNPar-exe.eventlog`
 
 ### Generating Random Gene Expression Data
 _Requires Python and pandas._

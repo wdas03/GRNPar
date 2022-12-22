@@ -74,11 +74,11 @@ Example:
 -}
 -- evaluate a BDD for a given assignment of the variables
 evaluateFunc :: BDD -> [(String, Int)] -> Bool
-evaluateFunc (Name x) func = case lookup x func of
+evaluateFunc (Name x) func  = case lookup x func of
                                 Just a  -> a == 1
                                 Nothing -> error "Variable not in assignment"
 evaluateFunc (AND x y) func = evaluateFunc x func && evaluateFunc y func
-evaluateFunc (OR x y) func = evaluateFunc x func || evaluateFunc y func
+evaluateFunc (OR x y) func  = evaluateFunc x func || evaluateFunc y func
 evaluateFunc (XOR x y) func
   | andTrue   = False
   | otherwise = evaluateFunc (OR x y) func
@@ -180,7 +180,7 @@ searchUpdateRule inpNodes targetNode timeLength =
     inpMatrix    = M.fromLists $ map (\xs -> map (name xs,) (timeStates xs)) inpNodes
 
     -- Get boolean expression combos
-    ruleCombos = map (getBDDFromFunc inpNodeNames) $ getConjDisjCombos (length inpNodes - 1)
+    ruleCombos   = map (getBDDFromFunc inpNodeNames) $ getConjDisjCombos (length inpNodes - 1)
 
     -- Predict states using boolean expression
     predStates   = map (\ruleBDD ->

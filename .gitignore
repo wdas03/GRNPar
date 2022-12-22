@@ -1,3 +1,5 @@
 .stack-work/
 .vscode/
+dist-newstyle/
+src/dist-newstyle/
 *~

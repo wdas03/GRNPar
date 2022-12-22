@@ -42,8 +42,10 @@ instance NFData NodeState where
 -}
 data BoolEdge = BoolEdge { v_i :: NodeState
                          , v_j :: NodeState } deriving (Eq)
+
 instance Show BoolEdge where
     show (BoolEdge i j) = "(" ++ name i ++ " -> " ++ name j ++ ")" 
+    
 instance NFData BoolEdge where
     rnf (BoolEdge i j) = rnf i `seq` rnf j
 
