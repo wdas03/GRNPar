@@ -46,6 +46,7 @@ def generate_data_time_series(num_nodes, time):
     state_series = []
     states_seen = []
     for t in range(1, time + 1):
+        # Ensure that simultaneous gene expressions are not repeated
         rand_states = [random.randint(0, 1) for _ in range(len(nodes))]
         while True:
             if rand_states not in states_seen:

@@ -6,4 +6,5 @@ stack.yaml.lock
 GRNPar-exe.hp
 GRNPar-exe.eventlog
 hreaded
+.DS_STORE
 *~
