@@ -1,2 +1,0 @@
-'/Users/williamdas/Documents/Parallel Functional Programming (Fall 2022)/Final Project/GRNPar/.stack-work/install/aarch64-osx/4c78f489fc43bc8978d62ecfb40dc41ee063577401813f1d815890ab66cb1a4c/9.2.5/bin/GRNPar-exe' 'src/data/InSilicoSize100-Ecoli1-nonoise-proteins-trajectories.csv' '8' '1' '1' 'par' +RTS '-N' '-N4' '-lf' '-s' '-threaded' 
-<<ghc: 5992365640 bytes, 398 GCs, 352205/653120 avg/max bytes residency (7 samples), 36M in use, 0.000 INIT (0.006 elapsed), 0.981 MUT (1.216 elapsed), 0.045 GC (0.047 elapsed) :ghc>>
