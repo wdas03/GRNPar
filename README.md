@@ -28,8 +28,8 @@ To run the executable, run:
 
 - _csvFilename_: gene-expression time-series data
 - _k_: fixed number of input nodes for each target node
-- _genExpressions_: whether or not to generate boolean expressions for each node (1 == True, 0 = False)
-- _genImage_: whether or not to generate image of boolean network (1 == True, 0 = False)
+- _genExpressions_: whether or not to generate boolean expressions for each node (1 = True, 0 = False)
+- _genImage_: whether or not to generate image of boolean network (1 = True, 0 = False)
   - If 1, then outputFile will be equal to csvFilename with png extension
 - _mode_: "seq" or "par" (seq for sequential algorithm and par for parallel implementation)
 
