@@ -34,15 +34,26 @@ To run the executable, run:
 - _mode_: "seq" or "par" (seq for sequential algorithm and par for parallel implementation)
 
 ### Example
-To run parallel implementation on 4 cores, and only generate an image:
+To run parallel on 4 cores and sequential implementations, and only generate boolean expressions (no image):
   
-> `stack exec GRNPar-exe "src/data/nodes_100_time_300.csv" 3 0 1 par -- +RTS -ls -N4`
+> `stack exec GRNPar-exe "src/data/nodes_100_time_300.csv" 5 1 0 par -- +RTS -ls -N4`
+> 
+> OR
 >
+> `stack exec GRNPar-exe "src/data/nodes_100_time_300.csv" 5 1 0 seq -- +RTS -ls`
 > `threadscope GRNPar-exe.eventlog`
 
-To run on E. coli dataset on 8 cores with _k_ = 4:
+To generate both boolean expressions and an image:
+> `stack exec GRNPar-exe "src/data/nodes_500_time_300.csv" 5 1 1 par -- +RTS -ls -N4`
+> 
+> OR
+> 
+> `stack exec GRNPar-exe "src/data/nodes_500_time_300.csv" 5 1 1 seq -- +RTS -ls`
+> `threadscope GRNPar-exe.eventlog`
 
-> `stack exec GRNPar-exe "src/data/e_coli.csv" 4 0 1 par -- +RTS -ls -N8`
+To run on E. coli dataset on 8 cores with _k_ = 5 and generate expressions and an image:
+
+> `stack exec GRNPar-exe "src/data/e_coli.csv" 5 1 1 par -- +RTS -ls -N8`
 > 
 > `threadscope GRNPar-exe.eventlog`
 

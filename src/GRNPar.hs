@@ -91,7 +91,7 @@ getMutualInfoSeq targetNode inputNodes k = map fst
     maxMutualNodeInfo@(maxMutual, _) = maximumBy (comparing snd) 
                                        $ map (\inp -> (inp, mutualInformation (timeStates inp) (timeStates targetNode))) inputNodes
     getMutualInfo' :: [(NodeState, Double)] -> [NodeState] -> Int -> [(NodeState, Double)]
-    getMutualInfo' regNodes inpNodes k'
+    getMutualInfo' regNodes inpNodes k' -- regNodes -> regulatory nodes currently being examined
         | length regNodes == k' = regNodes
         | otherwise             =
           let newMaxInfo@(newMax, _) = maximumBy (comparing snd)
