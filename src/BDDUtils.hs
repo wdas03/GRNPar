@@ -119,8 +119,13 @@ Example: given a list of truth values, such as [1, 0, 0, 1], and a boolean expre
     - Using the BDD data type, we would evaluate this as: ((1 AND 0) OR 0) AND 1 
 -}
 getConjDisjCombos :: Int -> [[Int]]
+
+{-
 getConjDisjCombos 1 = [[0], [1]]
 getConjDisjCombos n = [[mod x 2^i | i <- [0..n-1]] | x <- [0..(2^n)-1]]
+-}
+getConjDisjCombos 0 = [[]]
+getConjDisjCombos n = [(x:xs) | x <- [0, 1], xs <- getConjDisjCombos (n-1)]
 
 
 {-
